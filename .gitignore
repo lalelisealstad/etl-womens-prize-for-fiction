@@ -1,0 +1,9 @@
+venv/
+venv
+.env
+.venv
+apps/__pycache__/
+apps/api.py
+.DS_Store
+testing.ipynb
+assets/test.pkl
