@@ -14,5 +14,9 @@ $ pipenv install
 run after installation: 
 ```
 $ source .venv/bin/activate
+$ airflow webserver
+$ export AIRFLOW_HOME=~/airflow
+$ airflow scheduler
+
 $ python "app.py"
 ```
