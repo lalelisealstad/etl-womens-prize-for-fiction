@@ -1,3 +1,10 @@
+##  E T L ##
+
+import logging
+log: logging.log = logging.getLogger("airflow")
+log.setLevel(logging.INFO)
+
+# Extract and transform 
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -11,6 +18,7 @@ def get_wikidata():
     pd.DataFrame
     
     """
+
     url = "https://en.wikipedia.org/wiki/List_of_Women's_Prize_for_Fiction_winners"
     
     # Send a GET request to the URL and retrieve the content
@@ -74,7 +82,7 @@ def get_wikidata():
         }
         datadf = pd.DataFrame(data)
         df = pd.concat([datadf, df])
-
+            
     return df
 
 
@@ -208,20 +216,71 @@ def transform_books(df: pd.DataFrame) -> pd.DataFrame:
     
     return df
 
-def run_wpf_etl(): 
-    print('start')
-    # extract
-    books = get_wikidata()
-    # book_topics = get_book_topics(books)
-    
-    # transform 
-    books = transform_books(books)
-    # book_topics = transform_topics(book_topics)
-    
-    # load 
-    path = '/Users/elisealstad/code/womens-prize-for-fiction-data/'
-    books.to_csv(f"{path}books.csv")
-    print('finish')
+
+def wpf_extract_transform_books(): 
+    try: 
+        # extract
+        books = get_wikidata()
+        # book_topics = get_book_topics(books)
+        
+        # transform 
+        books = transform_books(books)
+        # book_topics = transform_topics(book_topics)
+        
+        # load intermediary 
+        books.to_parquet(f".books.parquet")
+        
+        log.info("Book extraction and transform complete")
+    except Exception as e:
+        log.error("Error message {e}")
     
 
-run_wpf_etl()
+
+def wpf_extract_transform_topics(): 
+    try: 
+        # extract
+        books = pd.read_parquet(f".books.parquet")
+        book_topics = get_book_topics(books)
+        
+        # transform 
+        book_topics = transform_topics(book_topics)
+        
+        # load intermediary 
+        book_topics.to_parquet(f".book_topics.parquet")
+        
+        log.info("Book topics extraction and transform complete")
+    except Exception as e:
+        log.error("Error message {e}")   
+
+
+
+### LOAD to SQLlite database 
+
+import sqlite3
+def wpf_load_books(): 
+    try: 
+        books = pd.read_parquet(f".books.parquet")
+
+        conn = sqlite3.connect('.wpf_books.db')
+
+        books.to_sql('books', conn, if_exists='replace', index=False) 
+
+        conn.close()
+        log.info("Book load complete")
+    except Exception as e:
+        log.error("Error message {e}")  
+        
+    
+def wpf_load_topics(): 
+    try: 
+        book_topics = pd.read_parquet(f".book_topics.parquet")
+
+        conn = sqlite3.connect('.wpf_books.db')
+        
+        book_topics.to_sql('book_topics', conn, if_exists='replace', index=False) 
+
+        conn.close()
+    
+        log.info("Book topics load complete")
+    except Exception as e:
+        log.error("Error message {e}")  
