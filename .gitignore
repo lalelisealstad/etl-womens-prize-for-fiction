@@ -5,8 +5,9 @@ venv
 apps/__pycache__/
 apps/api.py
 .DS_Store
-testing.ipynb
-assets/test.pkl
 dags/__pycache__/dag.cpython-312.pyc
 logs/scheduler/latest
 dags/__pycache__/*
+.db
+.parquet
+dags/.1_wpf_export.ipynb

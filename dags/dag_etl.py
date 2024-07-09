@@ -219,7 +219,7 @@ def transform_books(df: pd.DataFrame) -> pd.DataFrame:
 
 def wpf_extract_transform_books(): 
     try: 
-        # extract
+    # extract
         books = get_wikidata()
         # book_topics = get_book_topics(books)
         
@@ -228,8 +228,8 @@ def wpf_extract_transform_books():
         # book_topics = transform_topics(book_topics)
         
         # load intermediary 
-        books.to_parquet(f".books.parquet")
-        
+        books.to_parquet(f"books.parquet")
+    
         log.info("Book extraction and transform complete")
     except Exception as e:
         log.error("Error message {e}")
@@ -239,18 +239,18 @@ def wpf_extract_transform_books():
 def wpf_extract_transform_topics(): 
     try: 
         # extract
-        books = pd.read_parquet(f".books.parquet")
+        books = pd.read_parquet(f"books.parquet")
         book_topics = get_book_topics(books)
         
         # transform 
         book_topics = transform_topics(book_topics)
         
         # load intermediary 
-        book_topics.to_parquet(f".book_topics.parquet")
+        book_topics.to_parquet(f"book_topics.parquet")
         
         log.info("Book topics extraction and transform complete")
     except Exception as e:
-        log.error("Error message {e}")   
+        log.error("Error message {e}", exc_info=True)  
 
 
 
@@ -259,9 +259,9 @@ def wpf_extract_transform_topics():
 import sqlite3
 def wpf_load_books(): 
     try: 
-        books = pd.read_parquet(f".books.parquet")
+        books = pd.read_parquet(f"books.parquet")
 
-        conn = sqlite3.connect('.wpf_books.db')
+        conn = sqlite3.connect('wpf_books.db')
 
         books.to_sql('books', conn, if_exists='replace', index=False) 
 
@@ -273,9 +273,9 @@ def wpf_load_books():
     
 def wpf_load_topics(): 
     try: 
-        book_topics = pd.read_parquet(f".book_topics.parquet")
+        book_topics = pd.read_parquet(f"book_topics.parquet")
 
-        conn = sqlite3.connect('.wpf_books.db')
+        conn = sqlite3.connect('wpf_books.db')
         
         book_topics.to_sql('book_topics', conn, if_exists='replace', index=False) 
 
