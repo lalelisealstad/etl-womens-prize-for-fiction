@@ -14,7 +14,7 @@ default_args = {
     'depends_on_past' : False
 }
 
-dag =  DAG('wpf_etl_dag1', 
+dag =  DAG('wpf_etl_dag', 
         default_args=default_args, 
         schedule_interval='@yearly')
 
@@ -45,5 +45,4 @@ run_load_topics = PythonOperator(
 
 ready = DummyOperator(task_id='ready')
 
-# run_et_books >> run_et_topics >> run_load_books >> run_load_topics >> ready 
-run_et_books >> ready 
+run_et_books >> run_et_topics >> run_load_books >> run_load_topics >> ready 
