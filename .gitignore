@@ -5,7 +5,7 @@ venv
 apps/__pycache__/
 apps/api.py
 .DS_Store
-dags/__pycache__/dag.cpython-312.pyc
+dags/__pycache__/*
 logs/scheduler/latest
 dags/__pycache__/*
 .db
