@@ -11,3 +11,4 @@ dags/__pycache__/*
 .db
 .parquet
 dags/.1_wpf_export.ipynb
+dags/__pycache__/dag.cpython-312.pyc

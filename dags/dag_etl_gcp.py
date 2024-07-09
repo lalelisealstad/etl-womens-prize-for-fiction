@@ -10,6 +10,9 @@ import pandas as pd
 from bs4 import BeautifulSoup
 
 
+from google.cloud import storage
+import os
+
 def get_wikidata():
     """
     Function that uses webscrapping to get the tables of the List_of_Women's_Prize_for_Fiction_winners wikipedia page into one pandas dataframe
@@ -218,56 +221,69 @@ def transform_books(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def wpf_extract_transform_books(): 
+    try: 
     # extract
-    books = get_wikidata()
-    # book_topics = get_book_topics(books)
+        books = get_wikidata()
+        # book_topics = get_book_topics(books)
+        
+        # transform 
+        books = transform_books(books)
+        # book_topics = transform_topics(book_topics)
+        
+        # load intermediary 
+        books.to_parquet(f"../data/books.parquet")
     
-    # transform 
-    books = transform_books(books)
-    # book_topics = transform_topics(book_topics)
+        log.info("Book extraction and transform complete")
+    except Exception as e:
+        log.error("Error message {e}")
     
-    # load intermediary 
-    books.to_parquet(f"data/books.parquet")
-
-    log.info("Book extraction and transform complete")
-
 
 
 def wpf_extract_transform_topics(): 
-    # extract
-    books = pd.read_parquet(f"data/books.parquet")
-    book_topics = get_book_topics(books)
-    
-    # transform 
-    book_topics = transform_topics(book_topics)
-    
-    # load intermediary 
-    book_topics.to_parquet(f"data/book_topics.parquet")
-    
-    log.info("Book topics extraction and transform complete")
+    try: 
+        # extract
+        books = pd.read_parquet(f"../data/books.parquet")
+        book_topics = get_book_topics(books)
+        
+        # transform 
+        book_topics = transform_topics(book_topics)
+        
+        # load intermediary 
+        book_topics.to_parquet(f"../data/book_topics.parquet")
+        
+        log.info("Book topics extraction and transform complete")
+    except Exception as e:
+        log.error("Error message {e}", exc_info=True)  
+
 
 
 ### LOAD to SQLlite database 
 
 import sqlite3
 def wpf_load_books(): 
-    books = pd.read_parquet(f"data/books.parquet")
+    try: 
+        books = pd.read_parquet(f"../data/books.parquet")
 
-    conn = sqlite3.connect('data/wpf_books.db')
+        conn = sqlite3.connect('../data/wpf_books.db')
 
-    books.to_sql('books', conn, if_exists='replace', index=False) 
+        books.to_sql('books', conn, if_exists='replace', index=False) 
 
-    conn.close()
-    log.info("Book load complete")
+        conn.close()
+        log.info("Book load complete")
+    except Exception as e:
+        log.error("Error message {e}")  
         
     
 def wpf_load_topics(): 
-    book_topics = pd.read_parquet(f"data/book_topics.parquet")
+    try: 
+        book_topics = pd.read_parquet(f"../data/book_topics.parquet")
 
-    conn = sqlite3.connect('data/wpf_books.db')
+        conn = sqlite3.connect('../data/wpf_books.db')
+        
+        book_topics.to_sql('book_topics', conn, if_exists='replace', index=False) 
+
+        conn.close()
     
-    book_topics.to_sql('book_topics', conn, if_exists='replace', index=False) 
-
-    conn.close()
-
-    log.info("Book topics load complete")
+        log.info("Book topics load complete")
+    except Exception as e:
+        log.error("Error message {e}")  

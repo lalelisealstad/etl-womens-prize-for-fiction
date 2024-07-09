@@ -5,3 +5,4 @@ requests
 bs4 
 re
 pyarrow
+google-cloud-storage

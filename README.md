@@ -1,22 +1,25 @@
 # womens-prize-for-fiction-data
-Data engineer pipeline extract a list of Women's prize for fiction nominees and winners from wikipedia and meta data from Google Books API. 
+Data engineer pipeline. 
+
+1. Web scraping to extract a list of Women's prize for fiction nominees and winners from wikipedia. 
+2. Collect meta data from Open Library API. 
+3. Data cleaning
+4. Stores data as parquet files 
+5. loads data in database 
 
 
-Run first time: 
+Install Python env : 
 ```
 $ python3 -m venv .venv
 $ source .venv/bin/activate 
-$ pip install pipenv
-$ pipenv install ipykernel
-$ pipenv install 
+$ pip install -r requirements.txt
 ```
 
-run after installation: 
+Set up Airflow: 
 ```
 $ source .venv/bin/activate
-$ airflow webserver
 $ export AIRFLOW_HOME=~/airflow
+$ airflow db init
 $ airflow scheduler
-
-$ python "app.py"
+$ airflow webserver
 ```
