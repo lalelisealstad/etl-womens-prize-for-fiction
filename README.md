@@ -6,7 +6,7 @@ Steps:
 2. Collect meta data from Open Library API. 
 3. Data cleaning
 4. Stores data as parquet files 
-5. loads data in SQLlite database 
+5. Loads data in SQLlite database 
 
 
 Install Python env : 
